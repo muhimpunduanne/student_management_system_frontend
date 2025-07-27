@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import clsx from "clsx";
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu } from 'lucide-react';
+import clsx from 'clsx';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -16,23 +16,25 @@ export function Navigation() {
     const onScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const navItems = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
+    { label: 'Home', href: '/' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
   ];
+
+  const isActive = (href: string) => {
+    return pathname === href || (href !== '/' && pathname.startsWith(href));
+  };
 
   return (
     <header
       className={clsx(
-        "fixed top-0 left-0 z-50 w-full transition-all duration-300",
-        isScrolled
-          ? "bg-primary/20 shadow-md backdrop-blur-md"
-          : "bg-transparent"
+        'fixed top-0 left-0 z-50 w-full transition-all duration-300',
+        isScrolled ? 'bg-primary/20 shadow-md backdrop-blur-md' : 'bg-transparent'
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:py-6">
@@ -45,15 +47,17 @@ export function Navigation() {
           <span className="text-foreground">SMS</span>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-12 text-lg font-medium">
           {navItems.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
               className={clsx(
-                "transition-colors hover:text-white hover:underline underline-offset-4",
-                pathname === href ? "text-oklch font-semibold" : "text-oklch"
+                'transition-colors hover:text-white relative',
+                isActive(href)
+                  ? 'text-white font-semibold after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-white after:rounded-full'
+                  : 'text-oklch'
               )}
             >
               {label}
@@ -76,7 +80,11 @@ export function Navigation() {
         <div className="md:hidden px-0">
           <Sheet>
             <SheetTrigger className="w-12 h-12 flex items-center justify-center rounded-md hover:bg-gray-100">
-              <Menu className={`w-8 h-8 transition-colors ${isScrolled ? "text-black" : "text-white"}`} />
+              <Menu
+                className={`w-8 h-8 transition-colors ${
+                  isScrolled ? 'text-black' : 'text-white'
+                }`}
+              />
             </SheetTrigger>
 
             <SheetContent
@@ -89,10 +97,10 @@ export function Navigation() {
                     key={href}
                     href={href}
                     className={clsx(
-                      "transition-colors text-center py-2 rounded-md hover:bg-gray-100",
-                      pathname === href
-                        ? "text-blue-600 font-semibold"
-                        : "text-gray-700"
+                      'text-center py-2 rounded-md transition-all relative',
+                      isActive(href)
+                        ? 'text-blue-600 font-semibold after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-[2px] after:bg-blue-600 after:rounded-full'
+                        : 'text-gray-700 hover:bg-gray-100'
                     )}
                   >
                     {label}
