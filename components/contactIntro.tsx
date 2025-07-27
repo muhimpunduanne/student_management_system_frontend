@@ -8,10 +8,10 @@ export function ContactIntro() {
     <section className="relative h-auto md:h-[90vh] flex flex-col md:flex-row overflow-hidden">
       {/* Background image for mobile with blue overlay */}
       <div
-        className="md:hidden absolute inset-0 bg-blue-700 bg-opacity-80 bg-blend-multiply bg-cover bg-center z-0"
+        className="md:hidden absolute inset-0 bg-primary bg-opacity-80 bg-blend-multiply bg-cover bg-center z-0"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80')",
+            "url('https://i.postimg.cc/X79d1QJN/side-view-teenage-male-student-carrying-bag-his-shoulder-leaning-against-wall-reading-book.jpg')",
         }}
         aria-hidden="true"
       ></div>
@@ -21,7 +21,7 @@ export function ContactIntro() {
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="w-full md:w-1/2 mt-12flex flex-col justify-center z-10 text-white p-8 md:p-16 bg-blue-700 md:bg-blue-700 md:text-white"
+        className="w-full md:w-1/2 mt-12flex flex-col justify-center z-10 text-white p-8 md:p-16 bg-primary md:text-white"
       >
         <h2 className="text-4xl font-bold  mt-12 mb-6">Contact Us</h2>
         <p className="mb-8 max-w-md leading-relaxed text-lg">
@@ -54,7 +54,7 @@ export function ContactIntro() {
         className="hidden md:block md:w-1/2 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80')",
+            "url('https://i.postimg.cc/X79d1QJN/side-view-teenage-male-student-carrying-bag-his-shoulder-leaning-against-wall-reading-book.jpg')",
         }}
         aria-label="Office environment"
       ></motion.div>

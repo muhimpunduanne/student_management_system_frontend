@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import clsx from 'clsx';
+import Logo from './Logo';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -43,7 +44,7 @@ export function Navigation() {
           href="/"
           className="text-2xl font-bold tracking-tight flex items-center space-x-1"
         >
-          <span>🌿</span>
+          <Logo />
           <span className="text-foreground">SMS</span>
         </Link>
 

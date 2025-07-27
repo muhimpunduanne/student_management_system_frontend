@@ -50,7 +50,7 @@ export function CookieModal() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-wrap gap-2 md:flex-nowrap md:ml-6">
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start md:flex-nowrap md:ml-6 sm:mt-0 mt-2 ml-0 w-full md:w-auto">
               <Button
                 onClick={handleAccept}
                 className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-4 py-2 rounded w-full sm:w-auto"
@@ -66,13 +66,13 @@ export function CookieModal() {
             </div>
 
             {/* Close button */}
-            <button
+            {/* <button
               onClick={handleClose}
               className="absolute top-2 right-2 text-white hover:text-blue-700 text-xl leading-none cursor-pointer hover:bg-white rounded p-1 transition-colors duration-300"
               aria-label="Close"
             >
               &times;
-            </button>
+            </button> */}
           </div>
         </motion.div>
       )}
