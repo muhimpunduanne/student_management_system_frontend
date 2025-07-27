@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
+import { CookieModal } from "@/components/Cookie";
 
 // Load fonts with global subsets
 const inter = Inter({
@@ -73,6 +74,7 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <Navigation />
         {children}
+        <CookieModal />
       </body>
     </html>
   );

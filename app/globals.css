@@ -108,3 +108,29 @@
     clip-path: polygon(0 0, 100% 100%, 100% 0);
   }
 }
+
+.bubble {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(59, 130, 246, 0.18); /* Tailwind blue-500 w/ opacity */
+  filter: blur(40px);
+  animation: bubbleBounce 12s infinite ease-in-out alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bubbleBounce {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(40px, -40px) scale(1.2);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-30px, 30px) scale(0.95);
+    opacity: 0.5;
+  }
+}
+

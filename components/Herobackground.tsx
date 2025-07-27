@@ -42,12 +42,13 @@ export function Herobackground() {
         <AnimatePresence mode="wait">
           <motion.div
             key={slides[current].image}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.8 }}
-            className="absolute top-0 bottom-0 left-0 right-[-20%]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="absolute top-0 bottom-0 left-0 right-[-45%]"
           >
+            {/* Image */}
             <Image
               src={slides[current].image}
               alt="Hero slide"
@@ -55,17 +56,20 @@ export function Herobackground() {
               className="object-cover w-full h-full"
               priority
             />
+
+            {/* Dark overlay */}
+            <div className="absolute top-0 left-0 w-full h-full" />
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Diagonal Divider */}
-      <div className="hidden md:block w-0 md:w-[10vw] h-full relative z-10">
+      <div className="hidden md:block w-0 md:w-[20vw] h-full relative">
         <div className="absolute inset-0 bg-primary clip-diagonal" />
       </div>
 
       {/* Right Side (Text with animation) */}
-      <div className="relative w-[60vw] h-full bg-primary flex items-center justify-center p-8 md:p-12">
+      <div className="relative w-full sm:w-[90vw] md:w-[60vw] h-full bg-primary flex items-center justify-center p-4 sm:p-6 md:p-12">
         <AnimatePresence mode="wait">
           <motion.div
             key={slides[current].title}
@@ -73,12 +77,12 @@ export function Herobackground() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 50 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-xl"
+            className="text-center max-w-full sm:max-w-xl"
           >
-            <h1 className="text-8xl md:text-6xl font-bold text-background mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-background mb-4">
               {slides[current].title}
             </h1>
-            <p className="text-lg md:text-2xl text-muted-foreground">
+            <p className="text-base sm:text-lg md:text-2xl text-muted-foreground">
               {slides[current].subtitle}
             </p>
           </motion.div>
