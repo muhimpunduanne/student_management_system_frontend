@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
 import { CookieModal } from "@/components/Cookie";
 
 // Load fonts with global subsets
@@ -64,6 +63,8 @@ export const viewport = {
   maximumScale: 1,
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -71,8 +72,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${geistMono.variable}`}>
-      <body className="antialiased font-sans">
-        <Navigation />
+      <body className="antialiased font-sans"> 
         {children}
         <CookieModal />
       </body>

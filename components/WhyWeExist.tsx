@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 const reasons = [
   {
@@ -44,9 +45,8 @@ export function WhyWeExist() {
         return (
           <div
             key={reason.heading}
-            className={`container mx-auto px-6 flex flex-col md:flex-row items-center gap-12 ${
-              isEven ? '' : 'md:flex-row-reverse'
-            }`}
+            className={`container mx-auto px-6 flex flex-col md:flex-row items-center gap-12 ${isEven ? '' : 'md:flex-row-reverse'}`}
+
           >
             {/* Image */}
             <motion.div
@@ -56,11 +56,13 @@ export function WhyWeExist() {
               viewport={{ once: true }}
               variants={isEven ? slideVariantsLeft : slideVariantsRight}
             >
-              <img
+              <Image
                 src={reason.image}
                 alt={reason.heading}
                 className="w-full h-auto object-cover"
                 loading="lazy"
+                width={600}
+                height={400}
               />
             </motion.div>
 

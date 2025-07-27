@@ -75,10 +75,8 @@ export function Navigation() {
         {/* Mobile Menu */}
         <div className="md:hidden px-0">
           <Sheet>
-            <SheetTrigger className="flex items-center justify-center">
-              <Button variant="ghost" size="icon" className="w-12 h-12">
-                <Menu className="w-8 h-8" />
-              </Button>
+            <SheetTrigger className="w-12 h-12 flex items-center justify-center rounded-md hover:bg-gray-100">
+              <Menu className={`w-8 h-8 transition-colors ${isScrolled ? "text-black" : "text-white"}`} />
             </SheetTrigger>
 
             <SheetContent
