@@ -25,7 +25,7 @@ export function Footer() {
         <div className="flex-1 min-w-[220px] max-w-[320px]">
           <div className="flex items-center gap-4 mb-6">
             <Logo className="w-24 h-24" />
-            <div className="text-4xl font-extrabold tracking-tighter text-white">
+            <div className="text-4xl font-extrabold tracking-tighter text-white mt-12">
               <span className="bg-white text-transparent bg-clip-text drop-shadow-lg">
                 SMS
               </span>
