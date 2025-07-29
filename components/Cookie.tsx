@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Cookies from 'js-cookie';
-import { CookieConsent } from './cookie-consent';
+import { Button } from './ui/button';
 
 export function CookieModal() {
   const [show, setShow] = useState(false);
@@ -29,44 +29,50 @@ export function CookieModal() {
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          transition={{ duration: 0.5 }}
-          className="fixed bottom-0 left-0 right-0 z-50"
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          className="fixed bottom-4 left-4 right-4 z-50 px-4 sm:px-6 md:px-8"
         >
-          <div className="w-full bg-blue-600 text-white flex flex-col md:flex-row items-center justify-between p-4 shadow-lg relative">
-            <div className="max-w-4xl text-sm text-left">
+          <div className="w-full mx-auto bg-blue-600 text-white flex flex-col gap-4 md:flex-row items-start md:items-center justify-between p-4 sm:p-6 md:py-6 md:px-8 rounded-lg shadow-xl backdrop-blur-md relative">
+            {/* Message */}
+            <div className="text-sm sm:text-base leading-relaxed max-w-3xl">
               <p>
-                We use cookies to improve your experience. By continuing to use this site,
-                you agree to our use of cookies.{' '}
-                <a href="/privacy" className="underline">
+                We use cookies to improve your experience. By continuing to use this site, you agree to our use of cookies.{' '}
+                <a
+                  href="/privacy"
+                  className="underline underline-offset-2 hover:text-gray-200"
+                >
                   Learn more
                 </a>
               </p>
             </div>
 
-            <div className="mt-4 md:mt-0 flex gap-2">
-              <button
+            {/* Buttons */}
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start md:flex-nowrap md:ml-6 sm:mt-0 mt-2 ml-0 w-full md:w-auto">
+              <Button
                 onClick={handleAccept}
-                className="bg-white text-blue-600 px-4 py-2 rounded font-semibold hover:bg-gray-100"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-4 py-2 rounded w-full sm:w-auto"
               >
                 Accept
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDecline}
-                className="bg-blue-500 border border-white px-4 py-2 rounded font-semibold hover:bg-blue-700"
+                className="bg-blue-500 border border-white hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded w-full sm:w-auto"
               >
                 Decline
-              </button>
+              </Button>
             </div>
 
-            <button
+            {/* Close button */}
+            {/* <button
               onClick={handleClose}
-              className="absolute top-2 right-2 text-white hover:text-gray-200 text-xl"
+              className="absolute top-2 right-2 text-white hover:text-blue-700 text-xl leading-none cursor-pointer hover:bg-white rounded p-1 transition-colors duration-300"
+              aria-label="Close"
             >
               &times;
-            </button>
+            </button> */}
           </div>
         </motion.div>
       )}
