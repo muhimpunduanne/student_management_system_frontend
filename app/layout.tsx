@@ -23,13 +23,13 @@ export const metadata: Metadata = {
   title: "SMS - Student Management System",
   description:
     "SMS is a Student Management System that enables students and teachers to manage academic progress efficiently worldwide.",
-  metadataBase: new URL("https://sms-sable-one.vercel.app"), // ✅ Set base for relative URLs
+  metadataBase: new URL("https://sms-sable-one.vercel.app"), 
   icons: {
-    icon: "/favicon.ico", // ✅ Comes from /public
+    icon: "/favicon.ico", 
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png", // ✅ Comes from /public
+    apple: "/apple-touch-icon.png", 
   },
-  manifest: "/site.webmanifest", // ✅ Must also exist in /public
+  manifest: "/site.webmanifest", 
   openGraph: {
     title: "SMS - Student Management System",
     description:
@@ -59,14 +59,14 @@ export const metadata: Metadata = {
   },
 };
 
-// ✅ Optional: Viewport config (outside of metadata)
+
 export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
 
-// ✅ Root layout component
+
 export default function RootLayout({
   children,
 }: Readonly<{
