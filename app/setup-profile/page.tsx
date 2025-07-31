@@ -2,44 +2,37 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  UploadCloud,
-  Check,
-  BookOpen,
-  Code,
-  Cloud,
-  Briefcase,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 import toast, { Toaster } from "react-hot-toast";
 
 const courseOptions = [
-  { value: "web-dev", label: "Web Development", Icon: Code },
-  { value: "ui-ux", label: "UI/UX Design", Icon: BookOpen },
-  { value: "cloud", label: "Cloud Computing", Icon: Cloud },
-  { value: "business", label: "Business Strategy", Icon: Briefcase },
-  { value: "ai", label: "AI & ML", Icon: Check },
-  { value: "data", label: "Data Science", Icon: Check },
-  { value: "marketing", label: "Marketing", Icon: Check },
-  { value: "finance", label: "Finance", Icon: Check },
-  { value: "cybersec", label: "Cybersecurity", Icon: Check },
-  { value: "graphic", label: "Graphic Design", Icon: Check },
-  { value: "project", label: "Project Management", Icon: Check },
-  { value: "iot", label: "IoT Engineering", Icon: Check },
+  "Web Development",
+  "UI/UX Design",
+  "Cloud Computing",
+  "Business Strategy",
+  "AI & ML",
+  "Data Science",
+  "Marketing",
+  "Finance",
+  "Cybersecurity",
+  "Graphic Design",
+  "Project Management",
+  "IoT Engineering",
 ];
 
-export default function StudentProfilePage() {
+export default function StudentProfile() {
   const router = useRouter();
+
   const [phone, setPhone] = useState("");
   const [courses, setCourses] = useState<string[]>([]);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -65,12 +58,12 @@ export default function StudentProfilePage() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [profilePicture]);
 
-  const handleCourseToggle = (value: string) => {
+  const toggleCourse = (course: string) => {
     setCourses((prev) =>
-      prev.includes(value)
-        ? prev.filter((v) => v !== value)
+      prev.includes(course)
+        ? prev.filter((c) => c !== course)
         : prev.length < 12
-        ? [...prev, value]
+        ? [...prev, course]
         : prev
     );
   };
@@ -78,140 +71,176 @@ export default function StudentProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (courses.length < 12) {
-      toast.error("Please select at least 12 courses.");
+    if (courses.length < 1) {
+      toast.error("Please select at least one course.");
       return;
     }
 
-    const token = localStorage.getItem("token");
-    const formData = new FormData();
-    formData.append("phone", phone);
-    formData.append("course", JSON.stringify(courses));
-    if (profilePicture) {
-      formData.append("profilePicture", profilePicture);
-    }
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/students/student/profile", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Profile updated successfully!");
-
-        const existingUser = JSON.parse(localStorage.getItem("user") || "{}");
-        const updatedStudent = {
-          ...data.student,
-          courses: JSON.parse(data.student.course),
-          profilePicture: `http://localhost:5000/${data.student.profilePicture.replace(/\\/g, "/")}`,
-        };
-
-        const updatedUser = {
-          ...existingUser,
-          student_profile: updatedStudent,
-        };
-
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-
-        setTimeout(() => router.push("/dashboard"), 1200);
-      } else {
-        toast.error(data.message || "Update failed");
+      const formData = new FormData();
+      formData.append("phone", phone);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("courses", JSON.stringify(courses));
+      if (profilePicture) {
+        formData.append("profilePicture", profilePicture);
       }
-    } catch (err: any) {
-      toast.error("Error: " + err.message);
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5000/api/students/student/profile",
+        {
+          method: "PUT",
+          body: formData,
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile.");
+      }
+
+      toast.success("Profile updated successfully!");
+
+      // Update localStorage user data
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        user.student_profile = {
+          ...user.student_profile,
+          phone,
+          courses,
+          // Update the profilePicture preview URL (if a new pic uploaded)
+          profilePicture: preview || user.student_profile?.profilePicture,
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      // Redirect to dashboard after success
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-8">
+    <>
       <Toaster position="top-right" />
-      <div className="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Profile Picture */}
-        <div className="flex flex-col items-center gap-6">
-          <Avatar className="w-40 h-40 border-4 border-blue-500 ring-2 ring-blue-300 shadow-md">
-            <AvatarImage src={preview || undefined} />
-            <AvatarFallback className="text-5xl">
-              {name?.[0]?.toUpperCase() || "?"}
-            </AvatarFallback>
-          </Avatar>
-          <label className="flex items-center gap-2 text-blue-700 font-medium cursor-pointer">
-            <UploadCloud className="w-5 h-5" />
-            Choose Profile Picture
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setProfilePicture(e.target.files?.[0] ?? null)}
-              className="hidden"
-            />
-          </label>
-        </div>
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-white p-6">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full p-10 flex flex-col md:flex-row gap-10">
+          {/* Left: Avatar and upload */}
+          <div className="flex flex-col items-center space-y-6 md:w-1/3">
+            <Avatar
+              className="w-40 h-40 ring-4 ring-blue-400 shadow-lg rounded-full overflow-hidden transition-transform duration-300 hover:scale-105"
+              aria-label="Profile Picture"
+            >
+              {preview ? (
+                <AvatarImage
+                  src={preview}
+                  alt={name || "Profile"}
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <AvatarFallback className="text-6xl font-extrabold text-blue-700 flex items-center justify-center h-full bg-blue-100">
+                  {(name?.[0] || email?.[0] || "?").toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Label className="text-sm text-gray-700">Name</Label>
-            <div className="mt-1 font-semibold text-blue-900">{name}</div>
-          </div>
-          <div>
-            <Label className="text-sm text-gray-700">Email</Label>
-            <div className="mt-1 font-medium text-gray-600">{email}</div>
-          </div>
-          <div>
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              className="mt-2"
-            />
+            <label className="cursor-pointer inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700 transition select-none">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v8m0-8a4 4 0 100-8 4 4 0 000 8z"
+                />
+              </svg>
+              {loading ? "Uploading..." : "Upload Profile Picture"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => setProfilePicture(e.target.files?.[0] ?? null)}
+                disabled={loading}
+              />
+            </label>
           </div>
 
-          <div>
-            <Label className="text-base font-medium">Select up to 12 Courses</Label>
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {courseOptions.map(({ value, label, Icon }) => {
-                const selected = courses.includes(value);
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => handleCourseToggle(value)}
-                    className={cn(
-                      "flex items-center gap-2 p-3 rounded-lg border transition text-sm font-medium",
-                      selected
-                        ? "bg-blue-100 border-blue-500 ring-2 ring-blue-300"
-                        : "bg-white hover:bg-blue-50 border-gray-200"
-                    )}
-                  >
-                    <Icon className="w-5 h-5 text-blue-600" />
-                    {label}
-                  </button>
-                );
-              })}
+          {/* Right: Form */}
+          <form onSubmit={handleSubmit} className="md:w-2/3 flex flex-col space-y-6">
+            <div>
+              <Label>Name</Label>
+              <p className="mt-1 text-xl font-semibold text-blue-900">{name || "N/A"}</p>
             </div>
-            <p className="mt-2 text-xs text-gray-500">
-              Selected: {courses.length} / 12
-            </p>
-          </div>
 
-          <div className="text-center pt-4">
+            <div>
+              <Label>Email</Label>
+              <p className="mt-1 text-lg text-gray-700">{email || "N/A"}</p>
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+1 (555) 123-4567"
+                required
+                className="mt-2"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <Label>Courses (Select up to 12)</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3 max-h-52 overflow-y-auto">
+                {courseOptions.map((course) => {
+                  const selected = courses.includes(course);
+                  return (
+                    <button
+                      key={course}
+                      type="button"
+                      onClick={() => toggleCourse(course)}
+                      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border font-semibold text-sm transition ${
+                        selected
+                          ? "bg-blue-600 text-white border-blue-700 shadow-md"
+                          : "bg-white text-blue-700 border-blue-300 hover:bg-blue-100"
+                      }`}
+                      disabled={loading}
+                    >
+                      {course}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <Button
               type="submit"
-              className="px-8 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-full"
+              disabled={loading}
+              className="self-center mt-4 bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg text-white font-extrabold px-10 py-3 rounded-full hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Update Profile
+              {loading ? "Updating..." : "Update Profile"}
             </Button>
-          </div>
-        </form>
-      </div>
-    </main>
+          </form>
+        </div>
+      </main>
+    </>
   );
 }

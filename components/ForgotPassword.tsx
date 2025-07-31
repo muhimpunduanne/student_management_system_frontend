@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -13,6 +13,39 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 export default function ForgotPassword() {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('http://localhost:5000/api/users/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Success: show confirmation message that email was sent
+        setMessage('Reset link sent! Please check your email.');
+      } else {
+        // Show error message from backend
+        setMessage(data.message || 'Failed to send reset link.');
+      }
+    } catch (error) {
+      setMessage('Unexpected error occurred.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-md shadow-2xl shadow-gray-500/20">
@@ -23,9 +56,8 @@ export default function ForgotPassword() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid gap-4">
-              {/* Email Input */}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -33,13 +65,16 @@ export default function ForgotPassword() {
                   type="email"
                   placeholder="you@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
-              {/* Submit Button */}
-              <Button type="submit" className="w-full">
-                Send Reset Link
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Reset Link'}
               </Button>
+
+              {message && <p className="text-center mt-2">{message}</p>}
             </div>
           </form>
         </CardContent>

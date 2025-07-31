@@ -104,43 +104,43 @@ export function StudentDashboard(props: StudentDashboardProps) {
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
+useEffect(() => {
+  const stored = localStorage.getItem("user");
+  if (stored) {
+    try {
       const parsed = JSON.parse(stored);
       const name = `${parsed.firstName || ""} ${parsed.lastName || ""}`.trim();
+      const profile = parsed.student_profile || {};
 
-      const student = parsed.student_profile || {};
-      let parsedCourseKeys: string[] = [];
+      const courseNames: string[] = Array.isArray(profile.courses)
+        ? profile.courses
+        : [];
 
-      try {
-        parsedCourseKeys = JSON.parse(student.course || "[]");
-      } catch (e) {
-        console.error("Failed to parse student_profile.course", e);
-      }
-
-      const detailedCourses: Course[] = parsedCourseKeys.map((key) => ({
+      const detailedCourses: Course[] = courseNames.map((key) => ({
         id: key,
         title: courseDetails[key]?.title || key,
-        description:
-          courseDetails[key]?.description || "No description available.",
-        progress: Math.floor(Math.random() * 101), // Replace with real progress if available
+        description: courseDetails[key]?.description || "No description available.",
+        progress: Math.floor(Math.random() * 101), // Replace with real progress if needed
       }));
 
       const fullUser: User = {
         name,
         role: "student",
         student_profile: {
-          enrollment_year: student.enrollmentYear || 0,
-          status: student.status || "PENDING",
+          enrollment_year: profile.enrollment_year || 0,
+          status: profile.status || "PENDING",
           courses: detailedCourses,
         },
       };
 
       setUser(fullUser);
+    } catch (err) {
+      console.error("Error parsing user data from localStorage", err);
     }
-    setLoading(false);
-  }, []);
+  }
+  setLoading(false);
+}, []);
+
 
   if (loading) {
     return <ProgressLoader progress={50} />;

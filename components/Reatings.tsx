@@ -9,7 +9,7 @@ const testimonials = [
     school: "Harvard University",
     rating: 5,
     profileImage:
-      "https://res.cloudinary.com/dvl1iht4u/image/upload/v1751402101/IMG_2194.JPEG_fouw7g.jpg",
+      "",
     text: "This platform transformed the way I learn. It’s interactive, engaging, and effective.",
   },
   {
@@ -17,7 +17,7 @@ const testimonials = [
     role: "Teacher",
     school: "Madrid International School",
     rating: 4,
-    profileImage: "https://res.cloudinary.com/dvl1iht4u/image/upload/v1751402101/IMG_2194.JPEG_fouw7g.jpg",
+    profileImage: "",
     text: "As an educator, I can truly say this system makes a difference in classrooms.",
   },
   {
@@ -26,7 +26,7 @@ const testimonials = [
     school: "University of Toronto",
     rating: 5,
     profileImage:
-      "https://res.cloudinary.com/dvl1iht4u/image/upload/v1751402101/IMG_2194.JPEG_fouw7g.jpg",
+      "",
     text: "This platform has changed the way I approach my studies. Highly recommend!",
   }
   // other testimonials...
@@ -51,7 +51,7 @@ export function RatingsWithImage() {
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.img
             key={testimonial.name + "-image"}
-            src={testimonial.profileImage}
+            src={testimonial.profileImage || "/placeholder.jpg"}
             alt={testimonial.name}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
