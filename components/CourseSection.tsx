@@ -14,7 +14,6 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseSectionProps } from "@/lib/types";
 
-// --- Inline mockCourses ---
 interface Course {
   id: string;
   title: string;
@@ -73,14 +72,6 @@ const courseDetails: Record<string, Omit<Course, "id" | "progress">> = {
   },
 };
 
-const mockCourses: Course[] = Object.entries(courseDetails).map(([id, details]) => ({
-  id,
-  title: details.title,
-  description: details.description,
-  progress: Math.floor(Math.random() * 101),
-}));
-
-// --- User interface ---
 interface User {
   firstName: string;
   lastName: string;
@@ -109,14 +100,15 @@ export function CourseSection(props: CourseSectionProps) {
 
       const userCourses = parsed?.student_profile?.courses || [];
 
-      const detailedCourses: Course[] = userCourses.map((key) => {
-        const courseInfo = mockCourses.find((course) => course.id === key);
+      const detailedCourses: Course[] = userCourses.map((courseId) => {
+        const courseInfo = courseDetails[courseId];
 
         return {
-          id: key,
-          title: courseInfo?.title || key,
-          description: courseInfo?.description || "Course description not available.",
-          progress: courseInfo?.progress ?? Math.floor(Math.random() * 101),
+          id: courseId,
+          title: courseInfo?.title || courseId,
+          description:
+            courseInfo?.description || "Course description not available.",
+          progress: Math.floor(Math.random() * 101), // progress random for demo; replace with real data if available
         };
       });
 
@@ -135,7 +127,9 @@ export function CourseSection(props: CourseSectionProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">My Courses</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
+            My Courses
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Enrolled: {user.student_profile.enrollmentYear} &middot; Status:{" "}
             <Badge
