@@ -4,7 +4,6 @@ import { Herobackground } from "@/components/Herobackground";
 import { NavWrapper } from "@/components/NavWrapper";
 import { Ourmission } from "@/components/Ourmistion";
 import { RatingsWithImage } from "@/components/Reatings";
-// import { RatingsWithImage } from "@/components/RatingsWithImage";
 import { WhyWeExist } from "@/components/WhyWeExist";
 
 
@@ -16,7 +15,7 @@ export default function Home() {
       <Herobackground />
       <WhyWeExist />
       <Ourmission />
-      <Connectors />
+      {/* <Connectors /> */}
       <RatingsWithImage />
       <Footer />
     </main>

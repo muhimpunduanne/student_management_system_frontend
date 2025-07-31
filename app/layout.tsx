@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieModal } from "@/components/Cookie";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/app/context/AuthContext";
 
 // Fonts
 const inter = Inter({
@@ -18,7 +20,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// ✅ Metadata config
+
 export const metadata: Metadata = {
   title: "SMS - Student Management System",
   description:
@@ -75,8 +77,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${geistMono.variable}`}>
       <body className="antialiased font-sans">
+        <AuthProvider>
         {children}
+        <Toaster position="bottom-center" />
         <CookieModal />
+        </AuthProvider>
       </body>
     </html>
   );

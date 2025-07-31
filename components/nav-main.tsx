@@ -1,73 +1,47 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import * as React from "react";
+import { LucideIcon } from "lucide-react";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+type NavItem = {
+  title: string;
+  section: string;
+};
+
+type NavGroup = {
+  title: string;
+  icon: LucideIcon;
+  items: NavItem[];
+};
 
 export function NavMain({
   items,
+  onNavigate,
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+  items: NavGroup[];
+  onNavigate?: (section: string) => void;
 }) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-  )
+    <nav className="space-y-6 px-4 py-2">
+      {items.map((group) => (
+        <div key={group.title} className="space-y-3">
+          <div className="flex items-center text-sm font-semibold text-black uppercase tracking-wide">
+            <group.icon className="mr-2 h-4 w-4 text-blue-500" />
+            {group.title}
+          </div>
+          <div className="flex flex-col space-y-2">
+            {group.items.map((item) => (
+              <button
+                key={item.title}
+                onClick={() => onNavigate?.(item.section)}
+                className="text-left px-3 py-2 rounded-md text-sm font-medium text-black bg-blue-50 hover:bg-blue-100 hover:text-blue-700 transition-colors"
+              >
+                {item.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
 }
