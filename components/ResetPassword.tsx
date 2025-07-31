@@ -18,7 +18,7 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-8">
+    <div className="flex items-center justify-center bg-muted px-4 py-8">
       <Card className="w-full max-w-md rounded-xl border border-gray-200 bg-white shadow-lg">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-2xl font-bold text-gray-800">
