@@ -108,7 +108,7 @@ export function CourseSection(props: CourseSectionProps) {
           title: courseInfo?.title || courseId,
           description:
             courseInfo?.description || "Course description not available.",
-          progress: Math.floor(Math.random() * 101), // progress random for demo; replace with real data if available
+          progress: Math.floor(Math.random() * 101), 
         };
       });
 
