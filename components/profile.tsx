@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useRef } from "react";
 import {
   Card,
   CardHeader,
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ProfileSectionProps } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface StudentProfile {
   enrollmentYear: number;
@@ -30,6 +31,13 @@ interface User {
   student_profile: StudentProfile;
 }
 
+const STATUS_OPTIONS = [
+  { label: "Active", value: "active", color: "green" },
+  { label: "Pending", value: "pending", color: "yellow" },
+  { label: "Inactive", value: "inactive", color: "red" },
+  { label: "Alumni", value: "alumni", color: "purple" },
+];
+
 export function ProfileSection(props: ProfileSectionProps) {
   const [user, setUser] = useState<User | null>(null);
   const [phone, setPhone] = useState("");
@@ -38,13 +46,15 @@ export function ProfileSection(props: ProfileSectionProps) {
   const [status, setStatus] = useState("");
   const [enrollmentYear, setEnrollmentYear] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const parsedUser: User = JSON.parse(storedUser);
       setUser(parsedUser);
-
       setPhone(parsedUser.phoneNumber || "");
       setProfilePicture(parsedUser.profilePicture || null);
       setStatus(parsedUser.student_profile.status);
@@ -52,27 +62,53 @@ export function ProfileSection(props: ProfileSectionProps) {
     }
   }, []);
 
-  // Handle image file input change and preview
   function onImageChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        setErrorMsg("Please upload a valid image file.");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
+        setErrorMsg(null);
       };
       reader.readAsDataURL(file);
     }
   }
 
+  function removePreviewImage() {
+    setPreviewImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function validateInputs() {
+    if (phone && !/^\+?[0-9\s\-()]{7,15}$/.test(phone)) {
+      setErrorMsg("Please enter a valid phone number.");
+      return false;
+    }
+    if (!status) {
+      setErrorMsg("Please select a status.");
+      return false;
+    }
+    if (!enrollmentYear || enrollmentYear < 1900 || enrollmentYear > 2100) {
+      setErrorMsg("Please enter a valid enrollment year.");
+      return false;
+    }
+    setErrorMsg(null);
+    return true;
+  }
+
   async function handleSave() {
     if (!user) return;
+    if (!validateInputs()) return;
 
     setLoading(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
 
     try {
-      // Prepare payload: only editable fields + image if changed
-      // If previewImage is set, we need to send it as base64 or upload file properly
-      // For simplicity, assume backend accepts base64 image string under profilePicture
       const payload = {
         phoneNumber: phone,
         profilePicture: previewImage || profilePicture,
@@ -82,51 +118,52 @@ export function ProfileSection(props: ProfileSectionProps) {
         },
       };
 
-      // Replace with your real backend URL
       const response = await fetch(`/api/user/${user.email}`, {
-        method: "PUT", // or POST depending on your API
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
+      if (!response.ok) throw new Error("Failed to update profile");
 
-      const updatedUserFromServer = await response.json();
+      const updatedUser = await response.json();
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
 
-      // Update localStorage with server response (should include all user info)
-      localStorage.setItem("user", JSON.stringify(updatedUserFromServer));
-      setUser(updatedUserFromServer);
-
-      // Update local states from updated user
-      setPhone(updatedUserFromServer.phoneNumber || "");
-      setProfilePicture(updatedUserFromServer.profilePicture || null);
+      setPhone(updatedUser.phoneNumber || "");
+      setProfilePicture(updatedUser.profilePicture || null);
       setPreviewImage(null);
-      setStatus(updatedUserFromServer.student_profile.status);
-      setEnrollmentYear(updatedUserFromServer.student_profile.enrollmentYear);
+      setStatus(updatedUser.student_profile.status);
+      setEnrollmentYear(updatedUser.student_profile.enrollmentYear);
 
-      alert("Profile updated successfully!");
+      setSuccessMsg("Profile updated successfully!");
     } catch (error: any) {
-      alert(error.message || "Something went wrong!");
+      setErrorMsg(error.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
   }
 
-  if (!user) {
-    return <p className="p-6 text-center">Loading profile...</p>;
-  }
+const selectedStatusOption =
+  STATUS_OPTIONS.find((opt) => opt.value === (status ?? "").toLowerCase()) ||
+  STATUS_OPTIONS[0];
+
+
+  if (!user)
+    return (
+      <p className="p-6 text-center text-lg text-gray-600 animate-pulse">
+        Loading profile...
+      </p>
+    );
 
   return (
-    <div className="w-full p-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Display Profile */}
-        <Card className="border border-muted">
-          <CardHeader className="items-center text-center flex flex-col space-y-4">
-            <Avatar className="h-20 w-20">
+    <div className="w-full mx-auto p-6 sm:p-10 space-y-10 font-sans">
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Profile Card */}
+        <Card className="border border-muted-foreground/20 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="flex flex-col items-center space-y-4 text-center p-8">
+            <Avatar className="w-28 h-28 border-4 border-blue-200 shadow-md">
               {previewImage ? (
                 <AvatarImage
                   src={previewImage}
@@ -138,25 +175,41 @@ export function ProfileSection(props: ProfileSectionProps) {
                   alt={`${user.firstName} ${user.lastName}`}
                 />
               ) : (
-                <AvatarFallback>
-                  {user.firstName.charAt(0) || "U"}
+                <AvatarFallback className="text-5xl font-bold text-blue-400">
+                  {user.firstName?.[0] || "U"}
                 </AvatarFallback>
               )}
             </Avatar>
+
             <div>
-              <CardTitle>{`${user.firstName} ${user.lastName}`}</CardTitle>
-              <CardDescription>
-                Role: {user.role} ·{" "}
+              <CardTitle className="text-2xl font-semibold text-gray-900">
+                {user.firstName} {user.lastName}
+              </CardTitle>
+              <CardDescription className="text-sm text-gray-600 flex items-center justify-center space-x-2">
+                <span className="italic capitalize">{user.role}</span>
+                <span>·</span>
                 <Badge
                   variant="outline"
-                  className="border-blue-500 text-blue-700"
+                  className={cn(
+                    "capitalize",
+                    selectedStatusOption.color === "green" &&
+                      "border-green-600 text-green-700",
+                    selectedStatusOption.color === "yellow" &&
+                      "border-yellow-500 text-yellow-600",
+                    selectedStatusOption.color === "red" &&
+                      "border-red-600 text-red-700",
+                    selectedStatusOption.color === "purple" &&
+                      "border-purple-600 text-purple-700"
+                  )}
+                  aria-label={`Status: ${selectedStatusOption.label}`}
                 >
-                  {status}
+                  {selectedStatusOption.label}
                 </Badge>
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground text-center">
+
+          <CardContent className="text-sm text-gray-700 space-y-3 px-10 pb-10">
             <p>
               <strong>Email:</strong> {user.email}
             </p>
@@ -166,90 +219,159 @@ export function ProfileSection(props: ProfileSectionProps) {
               </p>
             )}
             <p>
-              <strong>Enrolled:</strong> {enrollmentYear}
+              <strong>Enrollment Year:</strong> {enrollmentYear}
             </p>
           </CardContent>
         </Card>
 
-        {/* Editable Form */}
-        <Card className="border border-muted">
-          <CardHeader>
-            <CardTitle>Edit Profile</CardTitle>
-            <CardDescription>
-              Update your information below (email, first & last names are
-              read-only).
+        {/* Edit Form */}
+        <Card className="border border-muted-foreground/20 shadow-lg">
+          <CardHeader className="px-8 pt-8 pb-4">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-gray-800">
+              Edit Profile
+            </CardTitle>
+            <CardDescription className="text-gray-600 mt-1">
+              Update your contact info, status, or profile picture below.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1">
+          <CardContent className="space-y-6 px-8 pb-10">
+            {errorMsg && (
+              <p
+                role="alert"
+                className="text-red-600 font-semibold bg-red-50 rounded-md p-3"
+              >
+                ⚠️ {errorMsg}
+              </p>
+            )}
+            {successMsg && (
+              <p
+                role="alert"
+                className="text-green-700 font-semibold bg-green-50 rounded-md p-3"
+              >
+                ✅ {successMsg}
+              </p>
+            )}
+
+            <div>
               <Label htmlFor="firstName">First Name</Label>
               <Input id="firstName" value={user.firstName} disabled />
             </div>
-            <div className="space-y-1">
+
+            <div>
               <Label htmlFor="lastName">Last Name</Label>
               <Input id="lastName" value={user.lastName} disabled />
             </div>
-            <div className="space-y-1">
+
+            <div>
               <Label htmlFor="email">Email</Label>
               <Input id="email" value={user.email} disabled />
             </div>
 
-            <div className="space-y-1">
+            <div>
               <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
+                type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter phone number"
+                placeholder="+1 234 567 890"
+                disabled={loading}
+                aria-invalid={!!errorMsg}
+                aria-describedby="phone-error"
               />
             </div>
 
-            <div className="space-y-1">
+            <div>
               <Label htmlFor="status">Status</Label>
-              <Input
+              <select
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                placeholder="Enter status"
-              />
+                disabled={loading}
+                aria-label="Select your status"
+                aria-required="true"
+                aria-describedby="status-help"
+              >
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <p id="status-help" className="text-xs text-gray-500 mt-1">
+                Select your current status
+              </p>
             </div>
 
-            <div className="space-y-1">
+            <div>
               <Label htmlFor="enrollmentYear">Enrollment Year</Label>
               <Input
                 id="enrollmentYear"
                 type="number"
                 value={enrollmentYear || ""}
                 onChange={(e) => setEnrollmentYear(Number(e.target.value))}
-                placeholder="Enter enrollment year"
+                placeholder="e.g., 2023"
                 min={1900}
                 max={2100}
+                disabled={loading}
               />
             </div>
 
-            <div className="space-y-1">
+            <div>
               <Label htmlFor="profilePicture">Profile Picture</Label>
+              <div
+                className={cn(
+                  "border-dashed border-2 rounded-md p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-colors",
+                  loading && "opacity-50 cursor-not-allowed"
+                )}
+                onClick={() => !loading && fileInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if ((e.key === "Enter" || e.key === " ") && !loading)
+                    fileInputRef.current?.click();
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Upload profile picture"
+              >
+                {previewImage ? (
+                  <>
+                    <img
+                      src={previewImage}
+                      alt="Profile preview"
+                      className="max-w-[150px] rounded-md mb-2 shadow"
+                    />
+                    <Button
+                      variant="destructive"
+                      onClick={removePreviewImage}
+                      disabled={loading}
+                    >
+                      Remove Image
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-gray-500 select-none">
+                    Click or press Enter to upload a new picture
+                  </p>
+                )}
+              </div>
               <input
+                ref={fileInputRef}
                 id="profilePicture"
                 type="file"
                 accept="image/*"
                 onChange={onImageChange}
-                title="Upload a profile picture"
+                disabled={loading}
+                className="hidden"
+                aria-label="Upload Profile Picture"
               />
-              {previewImage && (
-                <img
-                  src={previewImage}
-                  alt="Preview"
-                  className="mt-2 max-w-xs rounded-md"
-                />
-              )}
             </div>
 
-            <div className="pt-2">
+            <div>
               <Button
-                className="w-full md:w-auto"
                 onClick={handleSave}
                 disabled={loading}
+                className="w-full sm:w-auto"
+                aria-busy={loading}
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>

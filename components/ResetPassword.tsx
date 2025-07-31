@@ -1,7 +1,8 @@
 'use client';
 
+import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { useSearchParams } from 'next/navigation'; // for token from URL
+import toast from 'react-hot-toast';
 import {
   Card,
   CardHeader,
@@ -14,48 +15,51 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function ResetPassword() {
+export default function ResetPasswordPage() {
+  const { token } = useParams();
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage('');
-    if (!token) {
-      setMessage('Invalid or missing token');
+
+    if (!token || typeof token !== 'string') {
+      toast.error('Invalid or missing token');
       return;
     }
 
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
     setSubmitting(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/reset/${token}`, {
+      const res = await fetch(`http://localhost:5000/api/users/reset-password/${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, confirmPassword }),
       });
 
       const data = await res.json();
+
       if (res.ok) {
-        setMessage('Password reset successful! You can now log in.');
+        toast.success('Password reset successful! Redirecting to login...');
+        setTimeout(() => {
+          router.push('/login'); // redirect after 2 seconds
+        }, 2000);
       } else {
-        setMessage(data.message || 'Something went wrong.');
+        toast.error(data.message || 'Something went wrong.');
       }
     } catch (error) {
-      setMessage('Network error. Please try again.');
       console.error(error);
+      toast.error('Network error.');
     } finally {
       setSubmitting(false);
     }
@@ -123,12 +127,9 @@ export default function ResetPassword() {
               </div>
             </div>
 
-            {/* Submit */}
             <Button type="submit" className="w-full text-base" disabled={submitting}>
               {submitting ? 'Resetting...' : 'Reset Password'}
             </Button>
-
-            {message && <p className="text-center text-sm text-muted-foreground">{message}</p>}
           </form>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
