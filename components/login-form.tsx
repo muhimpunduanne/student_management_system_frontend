@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,77 +19,85 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<string | null>(null); 
   const router = useRouter();
-  const role = localStorage.getItem("userRole");
   const { setUser } = useAuth();
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRole = localStorage.getItem("userRole");
+      setRole(storedRole);
+    }
+  }, []);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validateEmail(email)) {
-    toast.error("Invalid email format");
-    return;
-  }
-
-  if (password.length < 6) {
-    toast.error("Password must be at least 6 characters");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      toast.error(data.message || "Login failed");
-    } else {
-      toast.success("You are logged in");
-
-      const user = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        courses: data.courses,
-        profile: data.profile,
-        role: data.role,
-        requiresProfileUpdate: data.requiresProfileUpdate,
-      };
-
-     
-      localStorage.setItem("token", data.token); // store the JWT
-      localStorage.setItem("name", `${data.firstName} ${data.lastName}`);
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("userRole", data.role);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      setUser(user);
-
-      if (data.requiresProfileUpdate) {
-        router.push("/setup-profile");
-      } else {
-        router.push("/dashboard");
-      }
+    if (!validateEmail(email)) {
+      toast.error("Invalid email format");
+      return;
     }
-  } catch (error) {
-    toast.error("Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Login failed");
+      } else {
+        toast.success("You are logged in");
+
+        const user = {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          courses: data.courses,
+          profile: data.profile,
+          role: data.role,
+          requiresProfileUpdate: data.requiresProfileUpdate,
+        };
 
 
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("name", `${data.firstName} ${data.lastName}`);
+          localStorage.setItem("email", data.email);
+          localStorage.setItem("userRole", data.role);
+          localStorage.setItem("user", JSON.stringify(user));
+        }
+
+        setUser(user);
+
+        if (data.requiresProfileUpdate) {
+          router.push("/setup-profile");
+        } else {
+          router.push("/dashboard");
+        }
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
