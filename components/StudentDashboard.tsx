@@ -127,7 +127,7 @@ useEffect(() => {
         name,
         role: "student",
         student_profile: {
-          enrollment_year: profile.enrollment_year || 0,
+          enrollment_year: profile.enrollmentYear || 0,
           status: profile.status || "PENDING",
           courses: detailedCourses,
         },

@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
 
     const response = await fetch(
-      `${process.env.API_BASE_URL}/api/users/verifyOtp`,
+      "http://localhost:5000/api/users/verifyOtp",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

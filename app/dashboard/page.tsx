@@ -70,8 +70,6 @@ export default function Page() {
         return <ProfileSection user={user} />;
       case "course":
         return <CourseSection user={user} />;
-      default:
-        return <div className="p-4">Student section not found</div>;
     }
   };
 
