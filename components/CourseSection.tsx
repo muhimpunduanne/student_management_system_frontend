@@ -13,8 +13,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseSectionProps } from "@/lib/types";
-import { mockCourses } from "@/app/data/mock-users";
 
+// --- Inline mockCourses ---
 interface Course {
   id: string;
   title: string;
@@ -22,6 +22,65 @@ interface Course {
   progress: number;
 }
 
+const courseDetails: Record<string, Omit<Course, "id" | "progress">> = {
+  "web-dev": {
+    title: "Web Development",
+    description: "Learn HTML, CSS, and JavaScript to build websites.",
+  },
+  "ui-ux": {
+    title: "UI/UX Design",
+    description: "Design stunning user interfaces and user experiences.",
+  },
+  cloud: {
+    title: "Cloud Computing",
+    description: "Understand cloud infrastructure and services.",
+  },
+  data: {
+    title: "Data Science",
+    description: "Explore data analysis, visualization, and ML basics.",
+  },
+  ai: {
+    title: "Artificial Intelligence",
+    description: "Dive into AI concepts and applications.",
+  },
+  business: {
+    title: "Business Fundamentals",
+    description: "Learn business skills and management.",
+  },
+  marketing: {
+    title: "Marketing",
+    description: "Master digital marketing strategies.",
+  },
+  finance: {
+    title: "Finance",
+    description: "Get introduced to financial planning and management.",
+  },
+  cybersec: {
+    title: "Cyber Security",
+    description: "Protect systems and networks from cyber threats.",
+  },
+  iot: {
+    title: "Internet of Things",
+    description: "Connect and control devices over the internet.",
+  },
+  project: {
+    title: "Project Management",
+    description: "Plan, execute, and close projects effectively.",
+  },
+  graphic: {
+    title: "Graphic Design",
+    description: "Create visual content using design tools.",
+  },
+};
+
+const mockCourses: Course[] = Object.entries(courseDetails).map(([id, details]) => ({
+  id,
+  title: details.title,
+  description: details.description,
+  progress: Math.floor(Math.random() * 101),
+}));
+
+// --- User interface ---
 interface User {
   firstName: string;
   lastName: string;
@@ -32,40 +91,40 @@ interface User {
   student_profile: {
     enrollmentYear: number;
     status: string;
-    courses: string[]; // updated to reflect actual structure
+    courses: string[];
   };
 }
 
 export function CourseSection(props: CourseSectionProps) {
   const [user, setUser] = useState<User | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
-useEffect(() => {
-  const stored = localStorage.getItem("user");
-  if (!stored) return;
 
-  try {
-    const parsed: User = JSON.parse(stored);
-    setUser(parsed);
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (!stored) return;
 
-    const userCourses = parsed?.student_profile?.courses || [];
+    try {
+      const parsed: User = JSON.parse(stored);
+      setUser(parsed);
 
-    const detailedCourses: Course[] = userCourses.map((key) => {
-      const courseInfo = mockCourses.find((course) => course.id === key);
+      const userCourses = parsed?.student_profile?.courses || [];
 
-      return {
-        id: key,
-        title: courseInfo?.title || key,
-        description: courseInfo?.description || "Course description not available.",
-        progress: courseInfo?.progress ?? Math.floor(Math.random() * 101),
-      };
-    });
+      const detailedCourses: Course[] = userCourses.map((key) => {
+        const courseInfo = mockCourses.find((course) => course.id === key);
 
-    setCourses(detailedCourses);
-  } catch (err) {
-    console.error("Error parsing user from localStorage:", err);
-  }
-}, []);
+        return {
+          id: key,
+          title: courseInfo?.title || key,
+          description: courseInfo?.description || "Course description not available.",
+          progress: courseInfo?.progress ?? Math.floor(Math.random() * 101),
+        };
+      });
 
+      setCourses(detailedCourses);
+    } catch (err) {
+      console.error("Error parsing user from localStorage:", err);
+    }
+  }, []);
 
   if (!user) {
     return <p className="p-6 text-center">Loading courses...</p>;
