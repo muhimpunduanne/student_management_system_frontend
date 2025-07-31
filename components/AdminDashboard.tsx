@@ -53,7 +53,7 @@ export function AdminDashboard() {
       if (!token) throw new Error('Authentication token not found.');
 
       // Fetch users
-      const usersRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/getAllUsers`, {
+      const usersRes = await fetch(`${process.env.API_BASE_URL}/api/users/getAllUsers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!usersRes.ok) throw new Error('Failed to fetch users');
@@ -63,7 +63,7 @@ export function AdminDashboard() {
         : usersData.users || [];
 
       // Fetch courses
-      const coursesRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses`, {
+      const coursesRes = await fetch(`${process.env.API_BASE_URL}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!coursesRes.ok) throw new Error('Failed to fetch courses');
