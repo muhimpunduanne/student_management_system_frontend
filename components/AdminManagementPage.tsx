@@ -46,7 +46,7 @@ export default function AdminUserTable() {
 
     const fetchUsers = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/users/getAllUsers', {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/getAllUsers`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data.users || res.data);
@@ -79,7 +79,7 @@ export default function AdminUserTable() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/users/${editingUser.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/${editingUser.id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -106,7 +106,7 @@ export default function AdminUserTable() {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers((prev) => prev.filter((u) => u.id !== userId));
@@ -122,7 +122,7 @@ export default function AdminUserTable() {
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/users/admin/create-student',
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/admin/create-student`,
         formData,
         {
           headers: {
@@ -140,7 +140,6 @@ export default function AdminUserTable() {
     }
   };
 
-  // Reset form data when both modals are closed
   useEffect(() => {
     if (!editingUser && !isCreating) {
       setFormData({ firstName: '', lastName: '', email: '', role: '', password: '' });

@@ -51,14 +51,14 @@ export default function Page() {
   const renderSection = () => {
     if (role === "admin") {
       switch (activeSection) {
-        case "admin-dashboard":
+        case "Overview":
           return <AdminDashboard />;
         case "admin-courses":
           return <div><AdminCourseTable /></div>;
         case "admin-add-admin":
           return <div><AdminManagementPage /></div>;
         default:
-          return <div className="p-4">Admin section not found</div>;
+          return <AdminDashboard />;
       }
     }
 

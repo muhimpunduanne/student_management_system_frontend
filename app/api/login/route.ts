@@ -4,7 +4,9 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
-    const response = await fetch("http://localhost:5000/api/users/login", {
+    const response = await fetch(`${process.env.API_BASE_URL}/api/users/login`, {
+
+
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

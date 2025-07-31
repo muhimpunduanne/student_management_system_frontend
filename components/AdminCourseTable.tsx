@@ -43,7 +43,7 @@ export default function AdminCourseTable() {
 
     const fetchCourses = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/courses', {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCourses(res.data.courses || res.data);
@@ -65,7 +65,7 @@ export default function AdminCourseTable() {
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/courses/create',
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses/create`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
