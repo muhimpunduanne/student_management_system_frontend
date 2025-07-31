@@ -16,9 +16,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { SidebarHeaderFetchUser } from "./SidebarHeaderFetchUser";
 
 const StudentNavigation = [
   {
@@ -59,12 +59,6 @@ const AdminNavigation = [
   },
 ];
 
-// Default user data (can also be dynamic or fetched)
-const defaultUser = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
 
 export function AppSidebar({
   onNavigate,
@@ -114,17 +108,7 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher
-          teams={[
-            {
-              name: "Acme Inc",
-              logo: GalleryVerticalEnd,
-              plan: "Enterprise",
-            },
-          ]}
-        />
-      </SidebarHeader>
+       <SidebarHeaderFetchUser />
 
       <SidebarContent>
         <NavMain
@@ -132,20 +116,6 @@ export function AppSidebar({
           onNavigate={onNavigate}
         />
       </SidebarContent>
-
-      {/* <SidebarFooter>
-        <NavUser
-          user={
-            {
-              name: `${user.firstName} ${user.lastName}`,
-              email: user.email,
-              avatar: "/avatars/default.jpg",
-              role: user.role,
-            } as { name: string; email: string; avatar: string; role: string }
-          }
-        />
-      </SidebarFooter> */}
-
       <SidebarRail />
     </Sidebar>
   );

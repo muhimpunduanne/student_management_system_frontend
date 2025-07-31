@@ -61,7 +61,7 @@ const mockCourses: Course[] = Object.entries(courseDetails).map(([id, details]) 
   id,
   title: details.title,
   description: details.description,
-  progress: Math.floor(Math.random() * 101), // random progress 0-100%
+  progress: Math.floor(Math.random() * 101),
 }));
 
 export { mockCourses };
