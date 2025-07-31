@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const backendURL = `${process.env.API_BASE_URL}/api/students/student/profile`;
+    const backendURL = 'http://localhost:5000/api/students/student/profile';
     const response = await fetch(backendURL, {
       method: 'PUT',
       headers: { 'content-type': contentType },

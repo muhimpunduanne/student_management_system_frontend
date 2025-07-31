@@ -91,14 +91,13 @@ export default function StudentProfile() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/api/students/student/profile`,
+        "http://localhost:5000/api/students/student/profile",
         {
           method: "PUT",
           body: formData,
           headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            Authorization: `Bearer ${token}`,
           },
-          credentials: "include",
         }
       );
 
@@ -106,23 +105,32 @@ export default function StudentProfile() {
         throw new Error("Failed to update profile.");
       }
 
+      const result = await response.json();
+      const updatedStudent = result.student;
+
+      const [firstName, ...rest] = name.trim().split(" ");
+      const lastName = rest.join(" ");
+
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+      const updatedUser = {
+        ...currentUser,
+        firstName,
+        lastName,
+        email,
+        student_profile: {
+          ...currentUser.student_profile,
+          phone: updatedStudent.phone,
+          courses: updatedStudent.courses || courses,
+          profilePicture: updatedStudent.profilePicture,
+          enrollmentYear: updatedStudent.enrollmentYear,
+          status: updatedStudent.status,
+        },
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
       toast.success("Profile updated successfully!");
-
-      // Update localStorage user data
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        const user = JSON.parse(userData);
-        user.student_profile = {
-          ...user.student_profile,
-          phone,
-          courses,
-          // Update the profilePicture preview URL (if a new pic uploaded)
-          profilePicture: preview || user.student_profile?.profilePicture,
-        };
-        localStorage.setItem("user", JSON.stringify(user));
-      }
-
-      // Redirect to dashboard after success
       router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "An error occurred.");
@@ -182,10 +190,15 @@ export default function StudentProfile() {
           </div>
 
           {/* Right: Form */}
-          <form onSubmit={handleSubmit} className="md:w-2/3 flex flex-col space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="md:w-2/3 flex flex-col space-y-6"
+          >
             <div>
               <Label>Name</Label>
-              <p className="mt-1 text-xl font-semibold text-blue-900">{name || "N/A"}</p>
+              <p className="mt-1 text-xl font-semibold text-blue-900">
+                {name || "N/A"}
+              </p>
             </div>
 
             <div>
@@ -217,7 +230,8 @@ export default function StudentProfile() {
                       key={course}
                       type="button"
                       onClick={() => toggleCourse(course)}
-                      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border font-semibold text-sm transition ${
+                      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border font-semibold text-sm transition
+                      ${
                         selected
                           ? "bg-blue-600 text-white border-blue-700 shadow-md"
                           : "bg-white text-blue-700 border-blue-300 hover:bg-blue-100"

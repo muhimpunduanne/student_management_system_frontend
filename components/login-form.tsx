@@ -35,69 +35,73 @@ export function LoginForm({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validateEmail(email)) {
-      toast.error("Invalid email format");
-      return;
-    }
+  if (!validateEmail(email)) {
+    toast.error("Invalid email format");
+    return;
+  }
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
+  if (password.length < 6) {
+    toast.error("Password must be at least 6 characters");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        toast.error(data.message || "Login failed");
-      } else {
-        toast.success("You are logged in");
+    if (!res.ok) {
+      toast.error(data.message || "Login failed");
+    } else {
+      toast.success("You are logged in");
 
-        const user = {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phoneNumber: data.phoneNumber,
-          courses: data.courses,
-          profile: data.profile,
-          role: data.role,
-          requiresProfileUpdate: data.requiresProfileUpdate,
-        };
+      const user = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        courses: data.courses,
+        profile: data.profile,
+        role: data.role,
+        requiresProfileUpdate: data.requiresProfileUpdate,
+        student_profile: data.student_profile || {},
+      };
 
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("name", `${data.firstName} ${data.lastName}`);
-          localStorage.setItem("email", data.email);
-          localStorage.setItem("userRole", data.role);
-          localStorage.setItem("user", JSON.stringify(user));
-        }
-
-        setUser(user);
-
-        if (data.requiresProfileUpdate) {
-          router.push("/setup-profile");
-        } else {
-          router.push("/dashboard");
-        }
+      // Save data to localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("name", `${data.firstName} ${data.lastName}`);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("userRole", data.role);
+        localStorage.setItem("user", JSON.stringify(user));
       }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
+
+      setUser(user); // AuthContext
+
+      // Redirect based on profile completion
+      if (data.requiresProfileUpdate) {
+        router.push("/setup-profile");
+      } else {
+        router.push("/dashboard");
+      }
     }
-  };
+  } catch (error) {
+    toast.error("Something went wrong");
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
