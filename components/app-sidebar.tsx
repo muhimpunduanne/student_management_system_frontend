@@ -109,7 +109,6 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
        <SidebarHeaderFetchUser />
-
       <SidebarContent>
         <NavMain
           items={role === "admin" ? AdminNavigation : StudentNavigation}

@@ -3,19 +3,28 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import ProgressLoader from '@/components/ProgressLoader'; // adjust the path
+import ProgressLoader from '@/components/ProgressLoader'; // adjust path if needed
 
 export default function Start() {
   const router = useRouter();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const hasVisited = Cookies.get('visited');
-    const token = Cookies.get('token');
+  
+    const visitedLocal = localStorage.getItem('visited');
+    const visitedCookie = Cookies.get('visited');
 
-    if (!hasVisited) {
+    if (!visitedLocal) {
+      localStorage.setItem('visited', 'true');
+    }
+    if (!visitedCookie) {
       Cookies.set('visited', 'true', { expires: 365 });
     }
+
+
+    const tokenLocal = localStorage.getItem('token');
+    const tokenCookie = Cookies.get('token');
+    const token = tokenLocal || tokenCookie;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -23,9 +32,10 @@ export default function Start() {
         if (next >= 100) {
           clearInterval(interval);
 
-          // After loading, check token and redirect
+ 
           if (!token) {
-            Cookies.set('redirectTo', '/start');
+            localStorage.setItem('redirectTo', '/start');
+            Cookies.set('redirectTo', '/start', { expires: 1 });
             router.replace('/login');
           } else {
             router.replace('/dashboard');
@@ -36,7 +46,7 @@ export default function Start() {
     }, 300);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
   return <ProgressLoader progress={progress} />;
 }

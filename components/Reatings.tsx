@@ -9,7 +9,7 @@ const testimonials = [
     school: "Harvard University",
     rating: 5,
     profileImage:
-      "",
+      "https://res.cloudinary.com/dvl1iht4u/image/upload/v1753975748/young-teenage-girl-sitting-her-bed-studying-using-laptop_t1ptot.jpg",
     text: "This platform transformed the way I learn. It’s interactive, engaging, and effective.",
   },
   {
@@ -17,7 +17,7 @@ const testimonials = [
     role: "Teacher",
     school: "Madrid International School",
     rating: 4,
-    profileImage: "",
+    profileImage: "https://res.cloudinary.com/dvl1iht4u/image/upload/v1753975747/study-group-african-people_hdpqeg.jpg",
     text: "As an educator, I can truly say this system makes a difference in classrooms.",
   },
   {
@@ -26,10 +26,10 @@ const testimonials = [
     school: "University of Toronto",
     rating: 5,
     profileImage:
-      "",
+      "https://i.postimg.cc/c1bNtX2d/college-students-different-ethnicities-cramming-1.jpg",
     text: "This platform has changed the way I approach my studies. Highly recommend!",
   }
-  // other testimonials...
+
 ];
 
 export function RatingsWithImage() {
