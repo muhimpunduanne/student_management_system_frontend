@@ -1,84 +1,67 @@
-
-
-export const mockAdminUser = {
-  name: "Alice Admin",
-  email: "alice.admin@example.com",
-  avatar: "/avatars/admin.jpg", // Optional avatar
-  role: "admin" as const,
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
 }
 
-export const mockStudentUser = {
-  name: "Steve Student",
-  email: "steve.student@example.com",
-  avatar: "/avatars/student.jpg",
-  role: "student"  as const,
-  phone: "123-456-7890",
-  student_profile: {
-    enrollment_year: 2023,
-    status: "Active",
-    courses: [
-      {
-        id: "c1",
-        title: "Full Stack Web Development",
-        progress: 72,
-        description: "Master front-end and back-end web technologies.",
-      },
-      {
-        id: "c2",
-        title: "React Advanced Patterns",
-        progress: 40,
-        description: "Dive deeper into React architecture and design.",
-      },
-      {
-        id: "c3",
-        title: "TypeScript Essentials",
-        progress: 90,
-        description: "Strongly type your JavaScript for reliability and clarity.",
-      },
-      {
-        id: "c4",
-        title: "Node.js Backend APIs",
-        progress: 55,
-        description: "Learn how to build RESTful APIs with Node.js.",
-      },
-      {
-        id: "c5",
-        title: "UI/UX for Developers",
-        progress: 30,
-        description: "Design principles and prototyping for better interfaces.",
-      },
-      {
-        id: "c6",
-        title: "Database Design with PostgreSQL",
-        progress: 80,
-        description: "Normalize data, design schemas, and write queries.",
-      },
-      {
-        id: "c7",
-        title: "DevOps Basics",
-        progress: 25,
-        description: "CI/CD, Docker, and cloud deployment fundamentals.",
-      },
-      {
-        id: "c8",
-        title: "Python for Web Automation",
-        progress: 60,
-        description: "Use Python to automate browser tasks and workflows.",
-      },
-      {
-        id: "c9",
-        title: "GraphQL APIs",
-        progress: 10,
-        description: "Build flexible APIs with GraphQL and Apollo Server.",
-      },
-      {
-        id: "c10",
-        title: "Next.js in Production",
-        progress: 50,
-        description: "Deploy fast, secure and scalable React apps.",
-      },
-    ],
+const courseDetails: Record<string, Omit<Course, "id" | "progress">> = {
+  "web-dev": {
+    title: "Web Development",
+    description: "Learn HTML, CSS, and JavaScript to build websites.",
   },
-}
+  "ui-ux": {
+    title: "UI/UX Design",
+    description: "Design stunning user interfaces and user experiences.",
+  },
+  cloud: {
+    title: "Cloud Computing",
+    description: "Understand cloud infrastructure and services.",
+  },
+  data: {
+    title: "Data Science",
+    description: "Explore data analysis, visualization, and ML basics.",
+  },
+  ai: {
+    title: "Artificial Intelligence",
+    description: "Dive into AI concepts and applications.",
+  },
+  business: {
+    title: "Business Fundamentals",
+    description: "Learn business skills and management.",
+  },
+  marketing: {
+    title: "Marketing",
+    description: "Master digital marketing strategies.",
+  },
+  finance: {
+    title: "Finance",
+    description: "Get introduced to financial planning and management.",
+  },
+  cybersec: {
+    title: "Cyber Security",
+    description: "Protect systems and networks from cyber threats.",
+  },
+  iot: {
+    title: "Internet of Things",
+    description: "Connect and control devices over the internet.",
+  },
+  project: {
+    title: "Project Management",
+    description: "Plan, execute, and close projects effectively.",
+  },
+  graphic: {
+    title: "Graphic Design",
+    description: "Create visual content using design tools.",
+  },
+};
 
+// Convert courseDetails object into an array of Course with progress
+const mockCourses: Course[] = Object.entries(courseDetails).map(([id, details]) => ({
+  id,
+  title: details.title,
+  description: details.description,
+  progress: Math.floor(Math.random() * 101), // random progress 0-100%
+}));
 
+export { mockCourses };
