@@ -91,7 +91,7 @@ export default function StudentProfile() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/students/student/profile`,
+        `${process.env.API_BASE_URL}/api/students/student/profile`,
         {
           method: "PUT",
           body: formData,
