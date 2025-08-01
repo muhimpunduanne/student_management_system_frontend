@@ -101,6 +101,7 @@ export default function StudentProfile() {
         }
       );
 
+
       if (!response.ok) {
         throw new Error("Failed to update profile.");
       }
